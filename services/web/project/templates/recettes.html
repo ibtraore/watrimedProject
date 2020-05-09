@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block content %}
+		<div class="content-section">
+			 <div class="text-center">
+			 	<h2 style="color: #337ab7;">Recipes list</h2>
+			 </div>
+		      <div class="table-responsive">
+              {{ pagination.links }}
+		        <table class="table table-hover">
+		          <thead>
+		            <tr>
+		              <th>Recipe code</th>
+		            </tr>
+		          </thead>
+		          <tbody>
+		            {% for plant in plants %}
+		            <tr>
+		              <td><a href="{{url_for('represent',code=plant[0])}}">{{ plant[0] }}</a></td>
+		            </tr>
+		            {% endfor %}
+		          </tbody>
+		        </table>
+		        {{ pagination.links }}
+		      </div>
+		</div>
+{% endblock content %}

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<script src="../static/js/cytoscape.min.js"></script>
+	<script src="../static/js/jquery.min.js"></script>
+	<script src="../static/js/cytoscape-qtip.js"></script>
+	<script src="../static/js/jquery.qtip.min.js"></script>
+	<link href="../static/css/jquery.qtip.min.css" rel="stylesheet" type="text/css"/>
+	<style>
+    #cy {
+        height: 100%;
+		width: 100%;
+		position: absolute;
+    }
+</style>
+</head>
+<body>
+	<div class="row" style="margin-bottom: 100px">
+		<p>essqi</p>
+	</div>
+	<div id="cy"></div>
+	<script>
+		var init = (function() {
+			$.ajax({
+		        url: "{{url_for('graph',name=name)}}",
+		        dataType: 'json',
+		        success: function(data){
+		        	displaygraph(data);
+		        },
+		    });
+		})();
+
+		function displaygraph(data) { // on dom ready
+			var options = {
+			  animate: false, // whether to animate changes to the layout
+			  animationDuration: 500, // duration of animation in ms, if enabled
+			  animationEasing: undefined, // easing of animation, if enabled
+			  animateFilter: function ( node, i ){ return true; }, // a function that determines whether the node should be animated.
+			  //All nodes animated by default on animate enabled.  Non-animated nodes are positioned immediately when the layout starts
+			  fit: true, // whether to fit the viewport to the graph
+			  padding: 30, // padding to leave between graph and viewport
+			  pan: undefined, // pan the graph to the provided position, given as { x, y }
+			  ready: undefined, // callback for the layoutready event
+			  stop: undefined, // callback for the layoutstop event
+			  spacingFactor: 1, // a positive value which adjusts spacing between nodes (>1 means greater than usual spacing)
+			  transform: function (node, position ){ return position; }, // transform a given node position. Useful for changing flow direction in discrete layouts
+			  zoom: undefined // zoom level as a positive number to set after animation
+			}
+
+			function watrimed_layout(options){
+			  //var opts = this.options = {};
+			  //for( var i in defaults ){ opts[i] = defaults[i]; }
+			  //for( var i in options ){ opts[i] = options[i]; }
+			}
+
+			watrimed_layout.prototype.run = function(){
+			    var layout = this;
+			    var options = this.options;
+			    var cy = options.cy;
+			    var eles = options.eles;
+			    var nodes = eles.nodes().not(':parent');
+			    var edges = eles.edges();
+
+
+
+			    var bb = options.boundingBox || { x1: 0, y1: 0, w: cy.width(), h: cy.height() };
+			    if( bb.x2 === undefined ){ bb.x2 = bb.x1 + bb.w; }
+			    if( bb.w === undefined ){ bb.w = bb.x2 - bb.x1; }
+			    if( bb.y2 === undefined ){ bb.y2 = bb.y1 + bb.h; }
+			    if( bb.h === undefined ){ bb.h = bb.y2 - bb.y1; }
+
+			    var base_size = 800/cy.elements("node").length
+
+			    if (cy.elements(".plant").length == 1){
+			    var r1 = cycle_layout(cy.elements(".plant"), [bb.w/20, bb.h/4*2], base_size, cy);
+			    var r2 = cycle_layout(cy.elements(".namein"), [bb.w/20*6, bb.h/4], base_size, cy);
+			    var r3 = cycle_layout(cy.elements(".country"), [bb.w/20*16, bb.h/4], base_size, cy, cy);
+			    var r4 = cycle_layout(cy.elements(".part"), [bb.w/20*6, bb.h/4*3], base_size, cy);
+			    var r5 = cycle_layout(cy.elements(".tind"), [bb.w/20*11, bb.h/4*3], base_size, cy);
+			    var r6 = cycle_layout(cy.elements(".comp"), [bb.w/20*16, bb.h/4*2], base_size, cy);
+			    var r7 = cycle_layout(cy.elements(".cont"), [bb.w/20*16, bb.h/4*3], base_size, cy);
+			    var r8 = cycle_layout(cy.elements(".dial"), [bb.w/20*11, bb.h/4], base_size, cy);
+			    }
+			    else if (cy.elements(".Disease").length == 1){
+			    var r1 = cycle_layout(cy.elements(".Herb"), [bb.w/5, bb.h/4*2], base_size, cy);
+			    var r2 = cycle_layout(cy.elements(".TCM_symptom"), [bb.w/5*2, bb.h/4], base_size, cy);
+			    var r3 = cycle_layout(cy.elements(".MM_symptom"), [bb.w/5*3, bb.h/4], base_size, cy);
+			    var r4 = cycle_layout(cy.elements(".Mol"), [bb.w/5*2, bb.h/4*3], base_size, cy);
+			    var r5 = cycle_layout(cy.elements(".Gene"), [bb.w/5*3, bb.h/4*3], base_size, cy);
+			    var r6 = cycle_layout(cy.elements(".Disease"), [bb.w/5*4, bb.h/4*2], base_size, cy);
+			    }
+			    else{
+			    var r1 = cycle_layout(cy.elements(".Herb"), [bb.w/5, bb.h/4*2], base_size, cy);
+			    var r2 = cycle_layout(cy.elements(".TCM_symptom"), [bb.w/5*2, bb.h/4], base_size, cy);
+			    var r3 = cycle_layout(cy.elements(".MM_symptom"), [bb.w/5*3, bb.h/4], base_size, cy);
+			    var r4 = cycle_layout(cy.elements(".Mol"), [bb.w/5*2, bb.h/4*3], base_size, cy);
+			    var r5 = cycle_layout(cy.elements(".Gene"), [bb.w/5*3, bb.h/4*3], base_size, cy);
+			    var r6 = cycle_layout(cy.elements(".Disease"), [bb.w/5*4, bb.h/4*2], base_size, cy);
+			    }
+
+			    new_position = new Array();
+			    for (i in r1){new_position[i] = r1[i]};
+			    for (i in r2){new_position[i] = r2[i]};
+			    for (i in r3){new_position[i] = r3[i]};
+			    for (i in r4){new_position[i] = r4[i]};
+			    for (i in r5){new_position[i] = r5[i]};
+			    for (i in r6){new_position[i] = r6[i]};
+			    for (i in r7){new_position[i] = r7[i]};
+			    for (i in r8){new_position[i] = r8[i]};
+
+			    layout.trigger({ type: 'layoutstart', layout: layout });
+			    nodes.layoutPositions(layout, options, function(ele, i){
+			    	 //alert(new_position[ele.data('id')][0]);
+			    	 //alert(new_position[ele.data('id')][1]);
+			        return{x:new_position[ele.data('id')][0], y:new_position[ele.data('id')][1]};
+			    })
+			};
+
+			function cycle_layout(element, shift, base_size, cy){
+			    var res = new Array();
+			    if (element.length == 1){
+			        res[element[0].data('id')] = [shift[0], shift[1]];
+			        element[0].style({'width': 30, 'height': 30})
+			    }
+			    else {
+			        var pass = 0;
+			        var r_main = 0;
+			        var fix_r = 0;
+			        var count = 0;
+			        var r_scape = 0;
+
+			        var digree_set_t = Array();
+			        var digree_sorted = Array();
+			        element.forEach(function(ele){
+			            digree_set_t[ele.data("id")] = ele.neighborhood().length;
+			        });
+			        var res2 = Object.keys(digree_set_t).sort(function(a,b){ return digree_set_t[a]-digree_set_t[b];});
+			        for(var key in res2){
+			            digree_sorted.push(res2[key]);
+			        }
+			        for (var i in digree_sorted){
+			            var ele = cy.elements('#'+digree_sorted[i]);
+			            if(cy.elements('#'+digree_sorted[i]).length == 1){
+			            	var each_r = 10;
+				            if (ele.neighborhood().length > 4){ each_r = Math.sqrt(ele.neighborhood().length)*5 }
+				            if (each_r > 35){each_r = 35};
+				            if (count == 0){
+				                res[ele.data('id')] = [0+shift[0], 0+shift[1]];
+				                ele.style({'width': each_r, 'height': each_r});
+				                count += 1;
+				                pass = 1000;
+				                r_scape = each_r;
+				                continue;
+				            }
+				            pass += Math.atan(each_r/r_main)/2;
+				            if(pass>(2*Math.PI-Math.atan(each_r/r_main))){
+				                pass = 0;
+				                r_main += (r_scape+5);
+				                r_scape = 0;
+				            }
+				            res[ele.data('id')] = [Math.cos(pass)*(r_main+each_r/2)+shift[0], Math.sin(pass)*(r_main+each_r/2)+shift[1]];
+				            ele.style({'width': each_r, 'height': each_r});
+				            pass += Math.atan(each_r/r_main)/2;
+				            r_scape = Math.max(each_r, r_scape);
+			            }
+			        }
+
+			    }
+			    return res
+			};
+
+			cytoscape('layout', 'watrimed_layout', watrimed_layout);
+			
+
+			var cy = cytoscape({
+			  container: document.getElementById('cy'),
+			  userZoomingEnabled: false,
+			  elements: data,
+			  layout: {
+				    name: 'watrimed_layout'
+			  },
+			  style: [
+			        {
+			            selector: 'node',
+			            style: {
+			                //shape: 'hexagon',
+			                'background-color': 'data(faveColor)',
+			                //label: 'data(id)'
+			        	}
+			        },
+			        {
+				      selector: 'edge',
+				      style: {
+				        'width': 3,
+				        'line-color': '#ccc',
+				        'target-arrow-color': '#ccc',
+				        //'mid-source-arrow-shape': 'diamond',
+				        'target-arrow-shape': 'triangle',
+				      }
+				  	}
+			   ],
+			  ready: function(){
+				    window.cy = this;
+			  }
+			});
+
+			cy.on('mouseover', 'node', function(evt) {
+			  this.neighborhood('edge').style( { 'line-color' : 'red' });
+			});
+
+			cy.on('mouseout', 'node', function(evt) {
+			  this.neighborhood('edge').style( { 'line-color' : '#ccc' });
+			});
+
+			cy.nodes().qtip({
+		        content: function(){ return 'Name:' + this.id();},
+		        position: {
+		            my: 'bottom left',
+		            at: 'bottom center'
+		        },
+		        show: {
+		            event: 'mouseover'
+		        },
+		        hide: {
+		            event: 'mouseout'
+		        },
+		        style: {
+		            classes: 'qtip-bootstrap',
+		            tip: {
+		                width: 8,
+		                height: 8
+		            }
+		        }
+		    });
+
+  	}
+      
+	</script>
+</body>
+</html>
+

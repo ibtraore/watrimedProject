@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block content %}
+		<div class="content-section">
+			 <div class="text-center">
+			 	<h2 style="color: #337ab7;">Plants list</h2>
+			 </div>
+		      <div class="table-responsive">
+              {{ pagination.links }}
+		        <table class="table table-hover">
+		          <thead>
+		            <tr>
+		              <th>Botanic Name</th>
+		              <th>Species Name</th>
+		              <th>Ethnomedicaluse</th>
+		            </tr>
+		          </thead>
+		          <tbody>
+		            {% for plant in plants %}
+		            <tr>
+		              <td><a href="{{url_for('representation',name=plant[0])}}">{{ plant[0] }}</a></td>
+		              <td>{{ plant[1] }}</td>
+		              <td>{{ plant[5] }}</td>
+		            </tr>
+		            {% endfor %}
+		          </tbody>
+		        </table>
+		        {{ pagination.links }}
+		      </div>
+		</div>
+{% endblock content %}
